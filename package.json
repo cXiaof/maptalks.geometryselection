@@ -1,0 +1,36 @@
+{
+  "name": "maptalks.geometryselection",
+  "version": "0.1.0-alpha.1",
+  "description": "A tool to select geometries on layers.",
+  "license": "MIT",
+  "author": "cXiaof",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cXiaof/maptalks.geometryselection.git"
+  },
+  "main": "dist/maptalks.geometryselection.min.js",
+  "keywords": [
+    "maptalks",
+    "geometryselection",
+    "selection",
+    "select"
+  ],
+  "bugs": {
+    "url": "https://github.com/cXiaof/maptalks.geometryselection/issues"
+  },
+  "homepage": "https://github.com/cXiaof/maptalks.geometryselection",
+  "scripts": {
+    "prepublish": "gulp minify",
+    "b": "gulp minify",
+    "watch": "gulp watch",
+    "w": "gulp watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "babel-preset-env": "^1.7.0",
+    "gulp": "^4.0.1",
+    "maptalks": "^0.44.0",
+    "maptalks-build-helpers": "^0.5.0"
+  }
+}
