@@ -11,7 +11,7 @@ A tool to select geometries on layers.
 -   Install with npm: `npm install maptalks.geometryselection`.
 -   Install with yarn: `yarn add maptalks.geometryselection`.
 -   Download from [dist directory](https://github.com/cXiaof/maptalks.geometryselection/tree/master/dist).
--   Use unpkg CDN: `https://cdn.jsdelivr.net/npm/maptalks.geometryselection/dist/maptalks.geometryselection.min.js`
+-   Use jsdelivr CDN: `https://cdn.jsdelivr.net/npm/maptalks.geometryselection/dist/maptalks.geometryselection.min.js`
 
 ## Usage
 

@@ -25,7 +25,9 @@
     "watch": "gulp watch",
     "w": "gulp watch"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@maptalks/feature-filter": "^1.0.0"
+  },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "babel-preset-env": "^1.7.0",
