@@ -24,7 +24,9 @@ As a plugin, `maptalks.geometryselection` must be loaded after `maptalks.js` in 
 ```
 
 ```javascript
-const geometryselection = new maptalks.GeometrySelection()
+const gs = new maptalks.GeometrySelection({
+    layers: ['v1', 'v2', 'v3']
+}).addTo(map)
 ```
 
 ## API Reference
@@ -34,7 +36,23 @@ new maptalks.GeometrySelection(options)
 ```
 
 -   options
-    -   none
+    -   layers **Array** names array of layers which choose geometry on
+    -   availTypes **Array** or **String** which types geometry can be chosen. If availTypes equal '\*', all types is available.
+    -   colorHit **String** the color of symbol when geo hit
+    -   colorChosen **String** the color of symbol when geo chosen
+
+`addTo()` set map
+`getMap()` get map
+`enable()`
+`disable()`
+`toggleEnable()` enable <=> disable
+`isEnabled()` get enable status
+`getGeometries()` get all geos chosen
+
+`forEach()`
+`filter()`
+`clear()`
+`remove()`
 
 ## Contributing
 
