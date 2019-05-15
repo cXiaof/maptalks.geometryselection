@@ -35,8 +35,7 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
         if (!map) return this
         if (map._map_tool) map._map_tool.disable()
         this._map = map
-        this._layer = new maptalks.VectorLayer(this._layerId)
-        this._layer.addTo(map).bringToFront()
+        this._newDedicatedLayer()
         return this
     }
 
@@ -118,6 +117,11 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
         this._geometries = this._isArrayHasData(geos) ? geos : []
     }
 
+    _newDedicatedLayer() {
+        this._layer = new maptalks.VectorLayer(this._layerId)
+        this._layer.addTo(this._map).bringToFront()
+    }
+
     _isFn(fn) {
         return maptalks.Util.isFunction(fn)
     }
@@ -172,18 +176,19 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
     }
 
     _showCopyHitGeo(geo) {
+        if (!this._layer) this._newDedicatedLayer()
         const id = `__hit__${uid}`
         const lastHitGeo = this._layer.getGeometryById(id)
         if (lastHitGeo) lastHitGeo.remove()
         if (this.hitGeo) {
             this.fire('hit', this.hitGeo)
-            const hitSymbol = this._getSymbolOrDefault('Hit')
-            const hitCopy = this._copyGeoUpdateSymbol(hitSymbol)
+            const hitSymbol = this._getSymbolOrDefault('Hit', this.hitGeo)
+            const hitCopy = this._copyGeoUpdateSymbol(hitSymbol, this.hitGeo)
             hitCopy.setId(id)
         }
     }
 
-    _getSymbolOrDefault(colorType, geo = this.hitGeo) {
+    _getSymbolOrDefault(colorType, geo) {
         let symbol = geo.getSymbol()
         const type = geo.getType()
         const color = this.options[`color${colorType}`]
@@ -204,7 +209,7 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
         return symbol
     }
 
-    _copyGeoUpdateSymbol(symbol, geo = this.hitGeo) {
+    _copyGeoUpdateSymbol(symbol, geo) {
         return geo
             .copy()
             .updateSymbol(symbol)
@@ -241,7 +246,8 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
     }
 
     _renderChosenGeos() {
-        this._layer.clear()
+        if (this._layer) this._layer.clear()
+        else this._newDedicatedLayer()
         this._geometries.forEach((geo) => {
             const chooseSymbol = this._getSymbolOrDefault('Chosen', geo)
             this._copyGeoUpdateSymbol(chooseSymbol, geo)

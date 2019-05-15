@@ -37,14 +37,10 @@ new maptalks.GeometrySelection(options, defaultChosenGeos)
 
 -   options **Object**
 
-    -   layers **Array**
-        names array of layers which choose geometry on
-    -   availTypes **Array** or **String**
-        which types geometry can be chosen. If availTypes equal ' \* ', all types is available.
-    -   colorHit **String**
-        the color of symbol when geo hit
-    -   colorChosen **String**
-        the color of symbol when geo chosen
+    -   layers **Array** names array of layers which choose geometry on
+    -   availTypes **Array** or **String** which types geometry can be chosen. If availTypes equal ' \* ', all types is available.
+    -   colorHit **String** the color of symbol when geo hit
+    -   colorChosen **String** the color of symbol when geo chosen
 
 -   defaultChosenGeos **Array**
 

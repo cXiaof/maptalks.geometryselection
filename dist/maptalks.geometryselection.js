@@ -1,5 +1,5 @@
 /*!
- * maptalks.geometryselection v0.1.0-alpha.1
+ * maptalks.geometryselection v0.1.0-alpha.2
  * LICENSE : MIT
  * (c) 2016-2019 maptalks.org
  */
@@ -1974,8 +1974,7 @@ var GeometrySelection = function (_maptalks$Eventable) {
         if (!map) return this;
         if (map._map_tool) map._map_tool.disable();
         this._map = map;
-        this._layer = new maptalks.VectorLayer(this._layerId);
-        this._layer.addTo(map).bringToFront();
+        this._newDedicatedLayer();
         return this;
     };
 
@@ -2064,6 +2063,11 @@ var GeometrySelection = function (_maptalks$Eventable) {
         this._geometries = this._isArrayHasData(geos) ? geos : [];
     };
 
+    GeometrySelection.prototype._newDedicatedLayer = function _newDedicatedLayer() {
+        this._layer = new maptalks.VectorLayer(this._layerId);
+        this._layer.addTo(this._map).bringToFront();
+    };
+
     GeometrySelection.prototype._isFn = function _isFn(fn) {
         return maptalks.Util.isFunction(fn);
     };
@@ -2121,20 +2125,19 @@ var GeometrySelection = function (_maptalks$Eventable) {
     };
 
     GeometrySelection.prototype._showCopyHitGeo = function _showCopyHitGeo(geo) {
+        if (!this._layer) this._newDedicatedLayer();
         var id = '__hit__' + uid;
         var lastHitGeo = this._layer.getGeometryById(id);
         if (lastHitGeo) lastHitGeo.remove();
         if (this.hitGeo) {
             this.fire('hit', this.hitGeo);
-            var hitSymbol = this._getSymbolOrDefault('Hit');
-            var hitCopy = this._copyGeoUpdateSymbol(hitSymbol);
+            var hitSymbol = this._getSymbolOrDefault('Hit', this.hitGeo);
+            var hitCopy = this._copyGeoUpdateSymbol(hitSymbol, this.hitGeo);
             hitCopy.setId(id);
         }
     };
 
-    GeometrySelection.prototype._getSymbolOrDefault = function _getSymbolOrDefault(colorType) {
-        var geo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.hitGeo;
-
+    GeometrySelection.prototype._getSymbolOrDefault = function _getSymbolOrDefault(colorType, geo) {
         var symbol = geo.getSymbol();
         var type = geo.getType();
         var color = this.options['color' + colorType];
@@ -2152,9 +2155,7 @@ var GeometrySelection = function (_maptalks$Eventable) {
         return symbol;
     };
 
-    GeometrySelection.prototype._copyGeoUpdateSymbol = function _copyGeoUpdateSymbol(symbol) {
-        var geo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.hitGeo;
-
+    GeometrySelection.prototype._copyGeoUpdateSymbol = function _copyGeoUpdateSymbol(symbol, geo) {
         return geo.copy().updateSymbol(symbol).addTo(this._layer);
     };
 
@@ -2194,7 +2195,7 @@ var GeometrySelection = function (_maptalks$Eventable) {
     GeometrySelection.prototype._renderChosenGeos = function _renderChosenGeos() {
         var _this4 = this;
 
-        this._layer.clear();
+        if (this._layer) this._layer.clear();else this._newDedicatedLayer();
         this._geometries.forEach(function (geo) {
             var chooseSymbol = _this4._getSymbolOrDefault('Chosen', geo);
             _this4._copyGeoUpdateSymbol(chooseSymbol, geo);
@@ -2210,6 +2211,6 @@ exports.GeometrySelection = GeometrySelection;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-typeof console !== 'undefined' && console.log('maptalks.geometryselection v0.1.0-alpha.1');
+typeof console !== 'undefined' && console.log('maptalks.geometryselection v0.1.0-alpha.2');
 
 })));
