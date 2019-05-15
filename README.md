@@ -32,26 +32,42 @@ const gs = new maptalks.GeometrySelection({
 ## API Reference
 
 ```javascript
-new maptalks.GeometrySelection(options)
+new maptalks.GeometrySelection(options, defaultChosenGeos)
 ```
 
--   options
-    -   layers **Array** names array of layers which choose geometry on
-    -   availTypes **Array** or **String** which types geometry can be chosen. If availTypes equal '\*', all types is available.
-    -   colorHit **String** the color of symbol when geo hit
-    -   colorChosen **String** the color of symbol when geo chosen
+-   options **Object**
+
+    -   layers **Array**
+        names array of layers which choose geometry on
+    -   availTypes **Array** or **String**
+        which types geometry can be chosen. If availTypes equal ' \* ', all types is available.
+    -   colorHit **String**
+        the color of symbol when geo hit
+    -   colorChosen **String**
+        the color of symbol when geo chosen
+
+-   defaultChosenGeos **Array**
 
 `addTo()` set map
+
 `getMap()` get map
+
 `enable()`
+
 `disable()`
+
 `toggleEnable()` enable <=> disable
+
 `isEnabled()` get enable status
+
 `getGeometries()` get all geos chosen
 
 `forEach()`
+
 `filter()`
+
 `clear()`
+
 `remove()`
 
 ## Contributing
