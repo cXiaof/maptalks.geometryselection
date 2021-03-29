@@ -1,7 +1,10 @@
 /*!
- * maptalks.geometryselection v0.1.0-alpha.2
+ * maptalks.geometryselection v0.1.0-beta.1
  * LICENSE : MIT
- * (c) 2016-2019 maptalks.org
+ * (c) 2016-2021 maptalks.org
+ */
+/*!
+ * requires maptalks@>=0.31.0 
  */
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -1939,6 +1942,18 @@ var options = {
     colorChosen: '#00bcd4'
 };
 
+var markerStyleDefault = {
+    markerType: 'path',
+    markerPath: [{
+        path: 'M8 23l0 0 0 0 0 0 0 0 0 0c-4,-5 -8,-10 -8,-14 0,-5 4,-9 8,-9l0 0 0 0c4,0 8,4 8,9 0,4 -4,9 -8,14z M3,9 a5,5 0,1,0,0,-0.9Z',
+        fill: '#DE3333'
+    }],
+    markerPathWidth: 16,
+    markerPathHeight: 23,
+    markerWidth: 24,
+    markerHeight: 34
+};
+
 var GeometrySelection = function (_maptalks$Eventable) {
     _inherits(GeometrySelection, _maptalks$Eventable);
 
@@ -1950,17 +1965,6 @@ var GeometrySelection = function (_maptalks$Eventable) {
         _this._layerId = '' + maptalks.INTERNAL_LAYER_PREFIX + uid;
         _this._enabled = false;
         _this._setDefaultChosenGeos(defaultChosenGeos);
-        _this._markerStyleDefault = {
-            markerType: 'path',
-            markerPath: [{
-                path: 'M8 23l0 0 0 0 0 0 0 0 0 0c-4,-5 -8,-10 -8,-14 0,-5 4,-9 8,-9l0 0 0 0c4,0 8,4 8,9 0,4 -4,9 -8,14z M3,9 a5,5 0,1,0,0,-0.9Z',
-                fill: '#DE3333'
-            }],
-            markerPathWidth: 16,
-            markerPathHeight: 23,
-            markerWidth: 24,
-            markerHeight: 34
-        };
         return _this;
     }
 
@@ -1994,8 +1998,7 @@ var GeometrySelection = function (_maptalks$Eventable) {
     };
 
     GeometrySelection.prototype.toggleEnable = function toggleEnable() {
-        this._enabled ? this.disable() : this.enable();
-        return this;
+        return this._enabled ? this.disable() : this.enable();
     };
 
     GeometrySelection.prototype.isEnabled = function isEnabled() {
@@ -2045,12 +2048,17 @@ var GeometrySelection = function (_maptalks$Eventable) {
         delete this._layer;
         delete this._layerId;
         delete this._enabled;
-        delete this._markerStyleDefault;
         delete this._map;
         delete this._geometries;
-        delete this._mousemove;
-        delete this._click;
         return this;
+    };
+
+    GeometrySelection.prototype._isArrayHasData = function _isArrayHasData(attr) {
+        return maptalks.Util.isArrayHasData(attr);
+    };
+
+    GeometrySelection.prototype._isFn = function _isFn(fn) {
+        return maptalks.Util.isFunction(fn);
     };
 
     GeometrySelection.prototype._setDefaultChosenGeos = function _setDefaultChosenGeos(geos) {
@@ -2062,31 +2070,17 @@ var GeometrySelection = function (_maptalks$Eventable) {
         this._layer.addTo(this._map).bringToFront();
     };
 
-    GeometrySelection.prototype._isFn = function _isFn(fn) {
-        return maptalks.Util.isFunction(fn);
-    };
-
-    GeometrySelection.prototype._isArrayHasData = function _isArrayHasData(attr) {
-        return maptalks.Util.isArrayHasData(attr);
-    };
-
     GeometrySelection.prototype._registerEvents = function _registerEvents() {
         var layers = this.options['layers'];
         if (this._isArrayHasData(layers)) {
-            var map = this._map;
-            this._mousemove = this._mousemoveEvents.bind(this);
-            this._click = this._clickEvents.bind(this);
-            map.on('mousemove', this._mousemove, this);
-            map.on('click', this._click, this);
+            this._map.on('mousemove', this._mousemoveEvents, this);
+            this._map.on('click', this._clickEvents, this);
         }
     };
 
     GeometrySelection.prototype._offMapEvents = function _offMapEvents() {
-        if (this._mousemove) {
-            var map = this._map;
-            map.off('mousemove', this._mousemove, this);
-            map.off('click', this._click, this);
-        }
+        this._map.off('mousemove', this._mousemoveEvents, this);
+        this._map.off('click', this._clickEvents, this);
     };
 
     GeometrySelection.prototype._mousemoveEvents = function _mousemoveEvents(e) {
@@ -2113,12 +2107,12 @@ var GeometrySelection = function (_maptalks$Eventable) {
         if (availTypes === '*') return true;
         if (!this._isArrayHasData(availTypes)) return false;
         var type = geo.getType();
-        return availTypes.reduce(function (avail, availType) {
+        return availTypes.some(function (avail, availType) {
             return avail || type.endsWith(availType);
-        }, false);
+        });
     };
 
-    GeometrySelection.prototype._showCopyHitGeo = function _showCopyHitGeo(geo) {
+    GeometrySelection.prototype._showCopyHitGeo = function _showCopyHitGeo() {
         if (!this._layer) this._newDedicatedLayer();
         var id = '__hit__' + uid;
         var lastHitGeo = this._layer.getGeometryById(id);
@@ -2142,7 +2136,7 @@ var GeometrySelection = function (_maptalks$Eventable) {
             }
             symbol.lineWidth = lineWidth;
         } else {
-            if (type.endsWith('Point')) symbol = Object.assign(this._markerStyleDefault, {
+            if (type.endsWith('Point')) symbol = Object.assign(markerStyleDefault, {
                 markerFill: color
             });else symbol = { lineColor: color, lineWidth: lineWidth };
         }
@@ -2203,4 +2197,4 @@ GeometrySelection.mergeOptions(options);
 
 export { GeometrySelection };
 
-typeof console !== 'undefined' && console.log('maptalks.geometryselection v0.1.0-alpha.2');
+typeof console !== 'undefined' && console.log('maptalks.geometryselection v0.1.0-beta.1, requires maptalks@>=0.31.0.');

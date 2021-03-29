@@ -9,17 +9,17 @@ const map = new maptalks.Map('map', {
         attribution:
             '&copy; <a href="http://osm.org">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/">CARTO</a>',
         maxAvailableZoom: 18,
-        placeholder: true
+        placeholder: true,
     }),
     scaleControl: { position: 'bottom-right', metric: true, imperial: true },
     zoomControl: {
         position: { top: 80, right: 20 },
         slider: false,
-        zoomLevel: true
+        zoomLevel: true,
     },
     spatialReference: {
         projection: 'EPSG:3857',
-        resolutions: (function() {
+        resolutions: (function () {
             const resolutions = []
             const d = 2 * 6378137 * Math.PI
             for (let i = 0; i < 22; i++) {
@@ -31,19 +31,19 @@ const map = new maptalks.Map('map', {
             top: 6378137 * Math.PI,
             bottom: -6378137 * Math.PI,
             left: -6378137 * Math.PI,
-            right: 6378137 * Math.PI
-        }
-    }
+            right: 6378137 * Math.PI,
+        },
+    },
 })
 new maptalks.CompassControl({
-    position: 'top-right'
+    position: 'top-right',
 }).addTo(map)
 
 const layerMarkers = new maptalks.VectorLayer('markers').addTo(map)
 const layerLines = new maptalks.VectorLayer('lines').addTo(map)
 const layerPolygons = new maptalks.VectorLayer('polygons').addTo(map)
 const gs = new maptalks.GeometrySelection({
-    layers: ['markers', 'lines', 'polygons']
+    layers: ['markers', 'lines', 'polygons'],
 }).addTo(map)
 
 // add some geos
@@ -51,7 +51,7 @@ const center = map.getCenter()
 const symbol = {
     polygonFill: '#ebebeb',
     polygonOpacity: 0.15,
-    lineColor: '#333'
+    lineColor: '#333',
 }
 new maptalks.Marker(center.add(0.01, 0.01)).addTo(layerMarkers)
 new maptalks.Marker(center.add(0.01, -0.01)).addTo(layerMarkers)
@@ -59,11 +59,11 @@ new maptalks.Marker(center.add(-0.02, 0.02)).addTo(layerMarkers)
 new maptalks.Marker(center.add(-0.02, -0.02)).addTo(layerMarkers)
 new maptalks.LineString([
     center.add(-0.015, -0.015),
-    center.add(-0.005, -0.005)
+    center.add(-0.005, -0.005),
 ]).addTo(layerLines)
 new maptalks.LineString([
     center.add(0.005, 0.005),
-    center.add(0.015, 0.015)
+    center.add(0.015, 0.015),
 ]).addTo(layerLines)
 new maptalks.Rectangle(center.add(-0.03, -0.02), 800, 1600, { symbol }).addTo(
     layerPolygons
@@ -90,9 +90,9 @@ const toolbar = new maptalks.control.Toolbar({
                     return target
                 }, '')
                 alert(text || '[]')
-            }
-        }
-    ]
+            },
+        },
+    ],
 }).addTo(map)
 
 // new tip Panel
@@ -113,6 +113,6 @@ const textPanel = new maptalks.control.Panel({
         继续选择，上一次选择的图形会被保留。<br />
         点击<b>getGeometries</b>检查是否为选择的图形。<br />
     `,
-    closeButton: true
+    closeButton: true,
 })
 map.addControl(textPanel)

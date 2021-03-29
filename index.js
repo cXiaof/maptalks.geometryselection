@@ -9,26 +9,27 @@ const options = {
     colorChosen: '#00bcd4'
 }
 
+const markerStyleDefault = {
+    markerType: 'path',
+    markerPath: [
+        {
+            path:
+                'M8 23l0 0 0 0 0 0 0 0 0 0c-4,-5 -8,-10 -8,-14 0,-5 4,-9 8,-9l0 0 0 0c4,0 8,4 8,9 0,4 -4,9 -8,14z M3,9 a5,5 0,1,0,0,-0.9Z',
+            fill: '#DE3333'
+        }
+    ],
+    markerPathWidth: 16,
+    markerPathHeight: 23,
+    markerWidth: 24,
+    markerHeight: 34
+}
+
 export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
     constructor(options, defaultChosenGeos) {
         super(options)
         this._layerId = `${maptalks.INTERNAL_LAYER_PREFIX}${uid}`
         this._enabled = false
         this._setDefaultChosenGeos(defaultChosenGeos)
-        this._markerStyleDefault = {
-            markerType: 'path',
-            markerPath: [
-                {
-                    path:
-                        'M8 23l0 0 0 0 0 0 0 0 0 0c-4,-5 -8,-10 -8,-14 0,-5 4,-9 8,-9l0 0 0 0c4,0 8,4 8,9 0,4 -4,9 -8,14z M3,9 a5,5 0,1,0,0,-0.9Z',
-                    fill: '#DE3333'
-                }
-            ],
-            markerPathWidth: 16,
-            markerPathHeight: 23,
-            markerWidth: 24,
-            markerHeight: 34
-        }
     }
 
     addTo(map) {
@@ -61,8 +62,7 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
     }
 
     toggleEnable() {
-        this._enabled ? this.disable() : this.enable()
-        return this
+        return this._enabled ? this.disable() : this.enable()
     }
 
     isEnabled() {
@@ -105,12 +105,17 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
         delete this._layer
         delete this._layerId
         delete this._enabled
-        delete this._markerStyleDefault
         delete this._map
         delete this._geometries
-        delete this._mousemove
-        delete this._click
         return this
+    }
+
+    _isArrayHasData(attr) {
+        return maptalks.Util.isArrayHasData(attr)
+    }
+
+    _isFn(fn) {
+        return maptalks.Util.isFunction(fn)
     }
 
     _setDefaultChosenGeos(geos) {
@@ -122,31 +127,17 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
         this._layer.addTo(this._map).bringToFront()
     }
 
-    _isFn(fn) {
-        return maptalks.Util.isFunction(fn)
-    }
-
-    _isArrayHasData(attr) {
-        return maptalks.Util.isArrayHasData(attr)
-    }
-
     _registerEvents() {
         const layers = this.options['layers']
         if (this._isArrayHasData(layers)) {
-            const map = this._map
-            this._mousemove = this._mousemoveEvents.bind(this)
-            this._click = this._clickEvents.bind(this)
-            map.on('mousemove', this._mousemove, this)
-            map.on('click', this._click, this)
+            this._map.on('mousemove', this._mousemoveEvents, this)
+            this._map.on('click', this._clickEvents, this)
         }
     }
 
     _offMapEvents() {
-        if (this._mousemove) {
-            const map = this._map
-            map.off('mousemove', this._mousemove, this)
-            map.off('click', this._click, this)
-        }
+        this._map.off('mousemove', this._mousemoveEvents, this)
+        this._map.off('click', this._clickEvents, this)
     }
 
     _mousemoveEvents(e) {
@@ -169,13 +160,12 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
         if (availTypes === '*') return true
         if (!this._isArrayHasData(availTypes)) return false
         const type = geo.getType()
-        return availTypes.reduce(
-            (avail, availType) => avail || type.endsWith(availType),
-            false
+        return availTypes.some(
+            (avail, availType) => avail || type.endsWith(availType)
         )
     }
 
-    _showCopyHitGeo(geo) {
+    _showCopyHitGeo() {
         if (!this._layer) this._newDedicatedLayer()
         const id = `__hit__${uid}`
         const lastHitGeo = this._layer.getGeometryById(id)
@@ -201,7 +191,7 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
             symbol.lineWidth = lineWidth
         } else {
             if (type.endsWith('Point'))
-                symbol = Object.assign(this._markerStyleDefault, {
+                symbol = Object.assign(markerStyleDefault, {
                     markerFill: color
                 })
             else symbol = { lineColor: color, lineWidth }
@@ -210,10 +200,7 @@ export class GeometrySelection extends maptalks.Eventable(maptalks.Class) {
     }
 
     _copyGeoUpdateSymbol(symbol, geo) {
-        return geo
-            .copy()
-            .updateSymbol(symbol)
-            .addTo(this._layer)
+        return geo.copy().updateSymbol(symbol).addTo(this._layer)
     }
 
     _clickEvents() {
